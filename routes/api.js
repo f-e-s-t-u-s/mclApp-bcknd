@@ -9,6 +9,7 @@ const serviceController = require("../controllers/servicesController");
 const appointmentController = require("../controllers/appointmentController");
 const doctorAuthController = require("../controllers/doctorAuthController");
 const authMiddleware = require("../middlewares/authMiddleware"); 
+const { requestAmbulance } = require("../controllers/ambulanceController");
 
 router.post("/signin", authController.signin);
 router.post("/register", userController.register);
@@ -164,7 +165,9 @@ router.post(
   appointmentController.makeTransactioForAppointment
 );
 
-
+// ! ambulance routes
+// user makes request for an ambulance
+router.post("/getAmbulance", requestAmbulance )
 // ...add other endpoints here...
 
 module.exports = router;

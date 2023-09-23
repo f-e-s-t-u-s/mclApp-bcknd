@@ -2,6 +2,7 @@
 const { NOW } = require("sequelize");
 const config = require("../config/config");
 const mysql = require("mysql");
+const { log } = require("winston");
 
 const connAttrs = mysql.createConnection(config.connection);
 
@@ -42,6 +43,28 @@ module.exports = {
           resolve(results);
         }
       );
+    });
+  },
+  getAmbulance: async (data) => {
+    return new Promise((resolve, reject) => {
+      const in_use = data;
+      console.log(in_use);
+      connAttrs.query(
+        "SELECT * FROM ambulances WHERE in_use = ?",
+        [in_use],
+        (err, resluts, fields) => {
+          if (err) {
+            console.log(err);
+            return reject(err);
+          }
+          resolve(resluts);
+        }
+      );
+    });
+  },
+  assignAmbulance: async () => {
+    return new Promise((resolve, reject) => {
+      connAttrs.query("SELECT ");
     });
   },
 };

@@ -13,6 +13,7 @@ const {
   requestAmbulance,
   getPendingAmbulanceRequest,
   assignRequestToAmbulance,
+  getAmbulancesQuery,
 } = require("../controllers/ambulanceController");
 
 router.post("/signin", authController.signin);
@@ -164,6 +165,9 @@ router.post("/getAmbulance", requestAmbulance);
 
 // admin gets all pending ambulance requests
 router.get("/pendingRequests", getPendingAmbulanceRequest);
+
+// get free or inuse ambulnase
+router.get("/getAmbulanceQuery", getAmbulancesQuery)
 
 // admin assign request to an ambulance
 router.put("/assignAmbulance/:request_id", assignRequestToAmbulance);

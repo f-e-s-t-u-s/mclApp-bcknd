@@ -7,6 +7,7 @@ CREATE TABLE ambulances (
     ambulance_id INT AUTO_INCREMENT PRIMARY KEY,
     ambulance_plate VARCHAR(20),
     owned_by varchar(100),
+    in_use BOOLEAN DEFAULT FALSE,
     current_request_id INT -- FOREIGN KEY (current_request_id) REFERENCES ambulance_requests(request_id)
 );
 CREATE TABLE ambulance_requests (
@@ -31,7 +32,7 @@ CREATE TABLE ambulance_requests (
 ALTER TABLE ambulances
 ADD CONSTRAINT FK_current_request FOREIGN KEY (current_request_id) REFERENCES ambulance_requests(request_id);
 
--- Insert ambulance data with organization names
+-- Insert ambulance data with dumy organization names
 INSERT INTO ambulances (ambulance_plate, owned_by)
 VALUES ('KBC 123L', 'Ambulance Org 1'),
     ('KYZ 789M', 'EMS Services 2'),

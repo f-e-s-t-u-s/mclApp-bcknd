@@ -49,7 +49,23 @@ module.exports = {
       res.status(500).json({ error: true, message: "Internal Server Error" });
     }
   },
-  assignRequestToAmbulance : async (req,res) =>{
-    console.log(req.params);
-  }
+  getAmbulancesQuery: async (req, res) => {
+    const {in_use} = req.query;
+    try {
+      const response = await ambulance.getAmbulance(in_use);
+      return res.status(200).json(response);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ error: true, message: "Internal Server Error" });
+    }
+  },
+  assignRequestToAmbulance: async (req, res) => {
+    const { request_id } = req.params;
+    try {
+      const response = await ambulance;
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ error: true, message: "Internal Server Error" });
+    }
+  },
 };

@@ -28,4 +28,20 @@ module.exports = {
       );
     });
   },
+  getPendingRequest: async () => {
+    return new Promise((resolve, reject) => {
+      const status = "Pending";
+      connAttrs.query(
+        "SELECT * FROM ambulance_requests WHERE status = ?",
+        [status],
+        (err, results, fields) => {
+          if (err) {
+            console.log(err);
+            return reject(err);
+          }
+          resolve(results);
+        }
+      );
+    });
+  },
 };

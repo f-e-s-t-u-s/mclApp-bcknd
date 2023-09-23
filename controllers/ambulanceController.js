@@ -39,4 +39,14 @@ module.exports = {
       res.status(500).json({ error: true, message: "Internal Server Error" });
     }
   },
+  getPendingAmbulanceRequest: async (req, res) => {
+    try {
+      const response = await ambulance.getPendingRequest();
+      //   console.log(response);
+      return res.status(200).json(response);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ error: true, message: "Internal Server Error" });
+    }
+  },
 };

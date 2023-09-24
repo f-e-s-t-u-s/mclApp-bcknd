@@ -8,11 +8,17 @@ const doctorController = require("../controllers/doctorsController");
 const serviceController = require("../controllers/servicesController");
 const appointmentController = require("../controllers/appointmentController");
 const doctorAuthController = require("../controllers/doctorAuthController");
-const authMiddleware = require("../middlewares/authMiddleware"); 
+const authMiddleware = require("../middlewares/authMiddleware");
+const {
+  requestAmbulance,
+  getPendingAmbulanceRequest,
+  assignRequestToAmbulance,
+  getAmbulancesQuery,
+} = require("../controllers/ambulanceController");
 
 router.post("/signin", authController.signin);
 router.post("/register", userController.register);
-router.post("/signup", userController.onbording); 
+router.post("/signup", userController.onbording);
 router.post("/verify", userController.verify);
 
 router.post("/doctorSignin", doctorAuthController.signin);
@@ -21,7 +27,11 @@ router.post("/doctorVerify", doctorAuthController.verify);
 router.post("/doctorBasic", doctorAuthController.basicUpdate);
 router.post("/doctorAcademic", doctorController.updateDoctorQualification);
 router.post("/doctorExperince", doctorController.updateDoctorExperience);
-router.post("/doctorAvailability", authMiddleware.verifyToken, doctorController.updateDoctorAvailability);
+router.post(
+  "/doctorAvailability",
+  authMiddleware.verifyToken,
+  doctorController.updateDoctorAvailability
+);
 
 //
 /**Location */
@@ -128,35 +138,20 @@ router.post(
   doctorController.getDoctorsBalance
 );
 
-
 // patient pulling his prescription
 router.post(
   "/patient/prescriptions",
   authMiddleware.verifyToken,
-  appointmentController.getPatientsPrescription 
+  appointmentController.getPatientsPrescription
 );
 
 // Patient Reset Password
-router.post(
-  "/patient/resetCode", userController.updateUserRegCode
-);
-router.post(
-  "/patient/resetPassword", userController.resetUserPassword
-);
+router.post("/patient/resetCode", userController.updateUserRegCode);
+router.post("/patient/resetPassword", userController.resetUserPassword);
 
 // Doctor Reset Password
-router.post(
-  "/doctor/resetCode", doctorAuthController.updateDoctorRegCode
-);
-router.post(
-  "/doctor/resetPassword", doctorAuthController.resetDoctorPassword
-);
-
-
-
-
-
-
+router.post("/doctor/resetCode", doctorAuthController.updateDoctorRegCode);
+router.post("/doctor/resetPassword", doctorAuthController.resetDoctorPassword);
 
 //Mpesa payment
 router.post(
@@ -164,7 +159,18 @@ router.post(
   appointmentController.makeTransactioForAppointment
 );
 
+// ! ambulance routes
+// user makes request for an ambulance
+router.post("/getAmbulance", requestAmbulance);
 
+// admin gets all pending ambulance requests
+router.get("/pendingRequests", getPendingAmbulanceRequest);
+
+// get free or inuse ambulnase
+router.get("/getAmbulanceQuery", getAmbulancesQuery)
+
+// admin assign request to an ambulance
+router.put("/assignAmbulance", assignRequestToAmbulance);
 // ...add other endpoints here...
 
 module.exports = router;

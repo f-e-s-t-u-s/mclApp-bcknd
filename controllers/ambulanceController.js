@@ -60,9 +60,11 @@ module.exports = {
     }
   },
   assignRequestToAmbulance: async (req, res) => {
-    const { request_id } = req.params;
+    const { request_id, ambulance_id } = req.query;
     try {
-      const response = await ambulance;
+      const response = await ambulance.assignAmbulance({request_id, ambulance_id});
+      console.log(response);
+      return res.status(200).json({message: "Ambulance dispatched successfully"});
     } catch (error) {
       console.log(error);
       res.status(500).json({ error: true, message: "Internal Server Error" });

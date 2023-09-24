@@ -170,7 +170,7 @@ router.get("/pendingRequests", getPendingAmbulanceRequest);
 router.get("/getAmbulanceQuery", getAmbulancesQuery)
 
 // admin assign request to an ambulance
-router.put("/assignAmbulance/:request_id", assignRequestToAmbulance);
+router.put("/assignAmbulance", assignRequestToAmbulance);
 // ...add other endpoints here...
 
 module.exports = router;

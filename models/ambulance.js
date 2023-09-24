@@ -1,8 +1,6 @@
 // models/ambulance.js
-const { NOW } = require("sequelize");
 const config = require("../config/config");
 const mysql = require("mysql");
-const { log } = require("winston");
 
 const connAttrs = mysql.createConnection(config.connection);
 
@@ -62,9 +60,55 @@ module.exports = {
       );
     });
   },
-  assignAmbulance: async () => {
+  assignAmbulance: async ({ request_id, ambulance_id }) => {
+    console.log(request_id, ambulance_id);
+    const status = "Dispatched";
     return new Promise((resolve, reject) => {
-      connAttrs.query("SELECT ");
+      // start transaction
+      connAttrs.beginTransaction((err) => {
+        if (err) {
+          return reject(err);
+        }
+
+        // Update the ambulance_requests table
+        connAttrs.query(
+          `UPDATE ambulance_requests SET status = ?, ambulance_id = ? WHERE request_id = ?`,
+          [status, ambulance_id, request_id],
+          (err, results, fields) => {
+            if (err) {
+              connAttrs.rollback(() => {
+                console.log(err);
+                return reject(err);
+              });
+            }
+
+            // Updatein_use in table ambulances
+            connAttrs.query(
+              `UPDATE ambulances SET in_use = TRUE, current_request_id = ? WHERE ambulance_id = ?`,
+              [request_id, ambulance_id],
+              (err, results, fields) => {
+                if (err) {
+                  connAttrs.rollback(() => {
+                    console.log(err);
+                    return reject(err);
+                  });
+                }
+
+                // Commit transaction
+                connAttrs.commit((err) => {
+                  if (err) {
+                    connAttrs.rollback(() => {
+                      console.log(err);
+                      return reject(err);
+                    });
+                  }
+                  resolve(results);
+                });
+              }
+            );
+          }
+        );
+      });
     });
   },
 };

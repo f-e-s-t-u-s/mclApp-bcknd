@@ -5,6 +5,36 @@ const mysql = require("mysql");
 const connAttrs = mysql.createConnection(config.connection);
 
 module.exports = {
+  addAmbulannce: async ({ ambulance_plate, issuing_organization }) => {
+    return new Promise((resolve, reject) => {
+      connAttrs.query(
+        "INSERT INTO ambulances (ambulance_plate, issuing_organization) VALUES (?,?)",
+        [ambulance_plate, issuing_organization],
+        (err, results, fields) => {
+          if (err) {
+            console.log(err);
+            reject(err);
+          }
+          resolve(results);
+        }
+      );
+    });
+  },
+  deleteAmbulance: async (ambulance_id) => {
+    return new Promise((resolve, reject) => {
+      connAttrs.query(
+        `DELETE FROM ambulances WHERE ambulance_id = ?`,
+        [ambulance_id],
+        (err, results, fields) => {
+          if (err) {
+            console.log(err);
+            return reject(err);
+          }
+          resolve(results);
+        }
+      );
+    });
+  },
   addAmbulanceRequestDetails: async (data) => {
     return new Promise((resolve, reject) => {
       const status = "Pending";

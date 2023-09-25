@@ -10,6 +10,32 @@ const ambulance = require("../models/ambulance");
 // pOST rate-ambulane/:request_id
 
 module.exports = {
+  // admin adds ambulnce
+  addNewAmbulance: async (req, res) => {
+    const { ambulance_plate, issuing_organization } = req.body;
+    try {
+      const response = await ambulance.addAmbulannce({
+        ambulance_plate,
+        issuing_organization,
+      });
+      console.log(response);
+      return res.status(200).json({ message: "Ambulance added successfully" });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ error: true, message: "Internal Server Error" });
+    }
+  },
+  deleteAmbulance: async (req, res) => {
+    try {
+      const { ambulance_id } = req.body;
+      const response = await ambulance.deleteAmbulance(ambulance_id);
+      console.log(response);
+      return res.status(200).json({message: "Ambulance deleted successfully"})
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ error: true, message: "Internal Server Error" });
+    }
+  },
   // user makes a request for an mbulance
   requestAmbulance: async (req, res) => {
     // todo validate inputs
@@ -83,7 +109,7 @@ module.exports = {
       const response = await ambulance.addAmbulanceRating({
         rating_value,
         comments,
-        request_id
+        request_id,
       });
       console.log(response);
       return res.status(200).json({ message: "Comment posted successfully" });

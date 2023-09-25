@@ -6,9 +6,12 @@ CREATE TABLE ratings (
 );
 CREATE TABLE ambulances (
     ambulance_id INT AUTO_INCREMENT PRIMARY KEY,
-    ambulance_plate VARCHAR(20),
-    owned_by varchar(100),
+    ambulance_plate VARCHAR(20) UNIQUE,
     in_use BOOLEAN DEFAULT FALSE,
+    issuing_organization varchar(255),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME,
+    in_contract BOOLEAN DEFAULT TRUE,
     current_request_id INT -- FOREIGN KEY (current_request_id) REFERENCES ambulance_requests(request_id)
 );
 CREATE TABLE ambulance_requests (
@@ -34,10 +37,3 @@ ALTER TABLE ambulances
 ADD CONSTRAINT FK_current_request FOREIGN KEY (current_request_id) REFERENCES ambulance_requests(request_id);
 ALTER TABLE ratings
 ADD CONSTRAINT FK_request_id FOREIGN KEY (request_id) REFERENCES ambulance_requests(request_id);
--- Insert ambulance data with dumy organization names
-INSERT INTO ambulances (ambulance_plate, owned_by)
-VALUES ('KBC 123L', 'Ambulance Org 1'),
-    ('KYZ 789M', 'EMS Services 2'),
-    ('KRS 456N', 'Rescue Squad 3'),
-    ('KMN 246P', 'Ambulance Org 4'),
-    ('KBC 789Q', 'EMS Services 5');

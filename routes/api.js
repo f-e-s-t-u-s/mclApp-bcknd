@@ -15,6 +15,8 @@ const {
   assignRequestToAmbulance,
   getAmbulancesQuery,
   ambulanceReview,
+  addNewAmbulance,
+  deleteAmbulance,
 } = require("../controllers/ambulanceController");
 
 router.post("/signin", authController.signin);
@@ -161,6 +163,12 @@ router.post(
 );
 
 // ! ambulance routes
+// admin adds an ambulnace
+router.post("/add-ambulance", addNewAmbulance);
+
+// admin deletes an ambulance
+router.post("/delete-ambulance", deleteAmbulance);
+
 // user makes request for an ambulance
 router.post("/getAmbulance", requestAmbulance);
 

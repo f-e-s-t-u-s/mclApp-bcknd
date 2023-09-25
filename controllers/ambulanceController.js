@@ -50,7 +50,7 @@ module.exports = {
     }
   },
   getAmbulancesQuery: async (req, res) => {
-    const {in_use} = req.query;
+    const { in_use } = req.query;
     try {
       const response = await ambulance.getAmbulance(in_use);
       return res.status(200).json(response);
@@ -62,9 +62,31 @@ module.exports = {
   assignRequestToAmbulance: async (req, res) => {
     const { request_id, ambulance_id } = req.query;
     try {
-      const response = await ambulance.assignAmbulance({request_id, ambulance_id});
+      const response = await ambulance.assignAmbulance({
+        request_id,
+        ambulance_id,
+      });
       console.log(response);
-      return res.status(200).json({message: "Ambulance dispatched successfully"});
+      return res
+        .status(200)
+        .json({ message: "Ambulance dispatched successfully" });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ error: true, message: "Internal Server Error" });
+    }
+  },
+  ambulanceReview: async (req, res) => {
+    // todo validate inputs
+    const { rating_value, comments, request_id } = req.body;
+    console.log(req.body);
+    try {
+      const response = await ambulance.addAmbulanceRating({
+        rating_value,
+        comments,
+        request_id
+      });
+      console.log(response);
+      return res.status(200).json({ message: "Comment posted successfully" });
     } catch (error) {
       console.log(error);
       res.status(500).json({ error: true, message: "Internal Server Error" });

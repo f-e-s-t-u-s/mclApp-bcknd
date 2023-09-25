@@ -1,7 +1,8 @@
 CREATE TABLE ratings (
     rating_id INT AUTO_INCREMENT PRIMARY KEY,
     rating_value INT NOT NULL,
-    comments TEXT
+    comments TEXT,
+    request_id INT
 );
 CREATE TABLE ambulances (
     ambulance_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -31,7 +32,8 @@ CREATE TABLE ambulance_requests (
 );
 ALTER TABLE ambulances
 ADD CONSTRAINT FK_current_request FOREIGN KEY (current_request_id) REFERENCES ambulance_requests(request_id);
-
+ALTER TABLE ratings
+ADD CONSTRAINT FK_request_id FOREIGN KEY (request_id) REFERENCES ambulance_requests(request_id);
 -- Insert ambulance data with dumy organization names
 INSERT INTO ambulances (ambulance_plate, owned_by)
 VALUES ('KBC 123L', 'Ambulance Org 1'),

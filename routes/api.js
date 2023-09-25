@@ -14,6 +14,7 @@ const {
   getPendingAmbulanceRequest,
   assignRequestToAmbulance,
   getAmbulancesQuery,
+  ambulanceReview,
 } = require("../controllers/ambulanceController");
 
 router.post("/signin", authController.signin);
@@ -171,6 +172,8 @@ router.get("/getAmbulanceQuery", getAmbulancesQuery)
 
 // admin assign request to an ambulance
 router.put("/assignAmbulance", assignRequestToAmbulance);
+
+router.post("/ambulance/rate", ambulanceReview);
 // ...add other endpoints here...
 
 module.exports = router;

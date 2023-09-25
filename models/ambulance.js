@@ -111,4 +111,19 @@ module.exports = {
       });
     });
   },
+  addAmbulanceRating: async ({ rating_value, comments, request_id }) => {
+    return new Promise((resolve, reject) => {
+      connAttrs.query(
+        "INSERT INTO ratings (rating_value, comments, request_id) VALUES (?,?,?)",
+        [rating_value, comments, request_id],
+        (err, results, fields) => {
+          if (err) {
+            console.log(err);
+            return reject(err);
+          }
+          resolve(results);
+        }
+      );
+    });
+  },
 };

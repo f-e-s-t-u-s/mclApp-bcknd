@@ -79,8 +79,8 @@ module.exports = {
       const in_use = data;
       console.log(in_use);
       connAttrs.query(
-        "SELECT * FROM ambulances WHERE in_use = ?",
-        [in_use],
+        "SELECT * FROM ambulances WHERE in_use = ? AND in_contract = ?",
+        [in_use, 1],
         (err, resluts, fields) => {
           if (err) {
             console.log(err);

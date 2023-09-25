@@ -23,8 +23,9 @@ module.exports = {
   deleteAmbulance: async (ambulance_id) => {
     return new Promise((resolve, reject) => {
       connAttrs.query(
-        `DELETE FROM ambulances WHERE ambulance_id = ?`,
-        [ambulance_id],
+        // `DELETE FROM ambulances WHERE ambulance_id = ?`,
+        `UPDATE ambulances SET in_contract = ? WHERE ambulance_id = ?`,
+        [0, ambulance_id],
         (err, results, fields) => {
           if (err) {
             console.log(err);

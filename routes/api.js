@@ -18,6 +18,12 @@ const {
   addNewAmbulance,
   deleteAmbulance,
 } = require("../controllers/ambulanceController");
+const {
+  requestAmbulanceRules,
+  validateAmbulance,
+  ratingRules,
+  validateRules,
+} = require("../middlewares/validationMiddleware");
 
 router.post("/signin", authController.signin);
 router.post("/register", userController.register);
@@ -170,18 +176,23 @@ router.post("/add-ambulance", addNewAmbulance);
 router.post("/delete-ambulance", deleteAmbulance);
 
 // user makes request for an ambulance
-router.post("/getAmbulance", requestAmbulance);
+router.post(
+  "/getAmbulance",
+  requestAmbulanceRules(),
+  validateAmbulance,
+  requestAmbulance
+);
 
 // admin gets all pending ambulance requests
 router.get("/pendingRequests", getPendingAmbulanceRequest);
 
 // get free or inuse ambulnase
-router.get("/getAmbulanceQuery", getAmbulancesQuery)
+router.get("/getAmbulanceQuery", getAmbulancesQuery);
 
 // admin assign request to an ambulance
 router.put("/assignAmbulance", assignRequestToAmbulance);
 
-router.post("/ambulance/rate", ambulanceReview);
+router.post("/ambulance/rate", ratingRules(), validateRules, ambulanceReview);
 // ...add other endpoints here...
 
 module.exports = router;

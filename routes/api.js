@@ -20,16 +20,19 @@ const {
 } = require("../controllers/ambulanceController");
 const {
   requestAmbulanceRules,
-  validateAmbulance,
   ratingRules,
-  validateRules,
+  validate,
+  signinRules,
+  userSignupRules,
+  registerUserRules,
+  verifyCodeRules,
 } = require("../middlewares/validationMiddleware");
 
-router.post("/signin", authController.signin);
-router.post("/register", userController.register);
-router.post("/signup", userController.onbording);
-router.post("/verify", userController.verify);
-
+/**  Routes start here */
+router.post("/signin", signinRules(), validate, authController.signin);
+router.post("/register", registerUserRules(), validate, userController.register);
+router.post("/signup", userSignupRules(), validate, userController.onbording);
+router.post("/verify", verifyCodeRules(), validate, userController.verify);
 router.post("/doctorSignin", doctorAuthController.signin);
 router.post("/doctorSinup", doctorAuthController.onbording);
 router.post("/doctorVerify", doctorAuthController.verify);
@@ -179,7 +182,7 @@ router.post("/delete-ambulance", deleteAmbulance);
 router.post(
   "/getAmbulance",
   requestAmbulanceRules(),
-  validateAmbulance,
+  validate,
   requestAmbulance
 );
 
@@ -192,7 +195,7 @@ router.get("/getAmbulanceQuery", getAmbulancesQuery);
 // admin assign request to an ambulance
 router.put("/assignAmbulance", assignRequestToAmbulance);
 
-router.post("/ambulance/rate", ratingRules(), validateRules, ambulanceReview);
+router.post("/ambulance/rate", ratingRules(), validate, ambulanceReview);
 // ...add other endpoints here...
 
 module.exports = router;

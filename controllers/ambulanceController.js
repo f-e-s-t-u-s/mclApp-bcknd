@@ -41,25 +41,28 @@ module.exports = {
     // todo validate inputs
     const {
       pickup_location,
-      emergency_nature,
-      user_id,
-      emergency_severity,
-      patient_name,
+      destination_address,
+      distance,
+      patient_state,
+      pickup_date,
     } = req.body;
-    console.log(req.body);
+    const user_id = req.userId;
     const data = {
       pickup_location: pickup_location,
-      emergency_nature: emergency_nature,
-      emergency_severity: emergency_severity,
-      patient_name: patient_name,
+      destination_address: destination_address,
+      distance: distance,
+      patient_state: patient_state,
+      pickup_date: pickup_date,
+      user_id: user_id,
     };
 
     try {
       const response = await ambulance.addAmbulanceRequestDetails(data);
       console.log(response);
+      const getAppointments = await ambulance.getUserAmbulanceRequests(user_id);
       return res
-        .status(200)
-        .json({ message: "Request submitted successfully" });
+        .status(201)
+        .json(getAppointments, { message: "Request submitted successfully" });
     } catch (error) {
       console.log(error);
       res.status(500).json({ error: true, message: "Internal Server Error" });

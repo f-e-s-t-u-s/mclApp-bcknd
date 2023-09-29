@@ -181,8 +181,7 @@ router.post("/delete-ambulance", deleteAmbulance);
 // user makes request for an ambulance
 router.post(
   "/getAmbulance",
-  requestAmbulanceRules(),
-  validate,
+  authMiddleware.verifyToken,
   requestAmbulance
 );
 

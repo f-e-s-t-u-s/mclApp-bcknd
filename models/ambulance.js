@@ -38,15 +38,17 @@ module.exports = {
   },
   addAmbulanceRequestDetails: async (data) => {
     return new Promise((resolve, reject) => {
-      const status = "Pending";
+      const request_status = "Pending";
       connAttrs.query(
-        "INSERT INTO ambulance_requests (patient_name, pickup_location, emergency_nature, emergency_severity, status) VALUES (?,?,?,?,?)",
+        "INSERT INTO ambulance_requests (patient_id, pickup_location, destination_address, distance, patient_state, pickup_date, request_status) VALUES (?,?,?,?,?,?,?)",
         [
-          data.patient_name,
+          data.user_id,
           data.pickup_location,
-          data.emergency_nature,
-          data.emergency_severity,
-          status,
+          data.destination_address,
+          data.distance,
+          data.patient_state,
+          data.pickup_date,
+          request_status,
         ],
         (err, result, fields) => {
           if (err) {
@@ -58,12 +60,27 @@ module.exports = {
       );
     });
   },
+  getUserAmbulanceRequests: async (user_id) => {
+    return new Promise((resolve, reject) => {
+      connAttrs.query(
+        "SELECT request_id, pickup_location, destination_address, distance, pickup_date, patient_state, request_datetime, request_status FROM ambulance_requests WHERE patient_id = ?",
+        [user_id],
+        (err, results, fields) =>{
+          if(err){
+            console.log(err);
+            reject(err);
+          }
+          resolve(results);
+        }
+      );
+    });
+  },
   getPendingRequest: async () => {
     return new Promise((resolve, reject) => {
-      const status = "Pending";
+      const request_status = "Pending";
       connAttrs.query(
-        "SELECT * FROM ambulance_requests WHERE status = ?",
-        [status],
+        "SELECT * FROM ambulance_requests WHERE request_status = ?",
+        [request_status],
         (err, results, fields) => {
           if (err) {
             console.log(err);

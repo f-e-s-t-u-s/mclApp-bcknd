@@ -1,7 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const https = require('https');
+const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
@@ -15,13 +15,14 @@ const corsOption = {
 app.use(cors(corsOption));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
+app.set("view engine", "ejs");
 
 const certPath = path.join(__dirname, 'cert'); // Adjust if needed
 
 const options = {
   key: fs.readFileSync(path.join(certPath, 'api_key.pem')),
   cert: fs.readFileSync(path.join(certPath, 'fullchain.pem')),
- // rejectUnauthorized: false // Bypass SSL verification
+ rejectUnauthorized: false // Bypass SSL verification
 };
 
 app.use("/api", apiRoutes);
@@ -29,12 +30,12 @@ app.use("/api", apiRoutes);
 const port = process.env.PORT || 3000;
 app.set('port', port);
 
-const server = https.createServer(options, app);
+const server = http.createServer(options, app);
 
 server.on('error', (error) => {
     console.error('Error starting server:', error.message);
 });
 
-server.listen(port, () => {
+app.listen(port, () => {
     console.log(`Mclinic API listens on port: ${port}`);
 });

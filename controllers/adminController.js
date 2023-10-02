@@ -1,7 +1,13 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const config = require("../config/config");
-const { addNewAdmin, loginAdmin } = require("../models/admin");
+const {
+  addNewAdmin,
+  loginAdmin,
+  getAdminById,
+  changeAdminPassword,
+} = require("../models/admin");
+const { sendEmail } = require("../models/email");
 
 // create new admin
 const handleAdminSignup = async (req, res) => {
@@ -51,4 +57,120 @@ const handleAdminSignin = async (req, res) => {
   return res.status(200).json({ message: "Login Successful", token });
 };
 
-module.exports = { handleAdminSignin, handleAdminSignup };
+// forgot password
+const handleForgotPassword = async (req, res) => {
+  const { email } = req.body;
+  const data = {
+    email: email,
+  };
+
+  try {
+    const response = await loginAdmin(data);
+    if (response.length === 0) {
+      return res
+        .status(401)
+        .json({ message: "We could not find your email address" });
+    }
+    const user = response[0];
+
+    //   genearet toke
+    const token = jwt.sign(
+      { email: user.email, id: user.id },
+      config.jwtSecretKey,
+      { expiresIn: "30m" }
+    );
+    const link = `${process.env.SERVER_URL}/api/admin/reset?id=${user.id}&token=${token}`;
+    const content = `<p>Hello, ${user.name} </p>
+    <p>We have received a request to reset your password. If you did not request this change, please disregard this email.</p>
+    <p>To reset your password, please click the following link:</p>
+    <p><a href=${link}>Password Reset Link</a></p>
+    <p>This link is valid for the next 30 minutes. If you have any questions or concerns, please don't hesitate to contact our support team.</p>
+    <p>Best regards,<br>MCLINIC</p>`;
+    const subject = "Password Reset Request";
+    const emailAdress = user.email;
+
+    const mailResult = await sendEmail(emailAdress, subject, content);
+    return res.status(201).json({
+      message: "Your reset link has been sent to your email. Please check",
+    });
+  } catch (error) {
+    console.error("Error occurred:", error);
+    res.status(500).json({ error: true, message: "Internal Server Error" });
+  }
+};
+
+const clickEmail = async (req, res) => {
+  const { id, token } = req.query;
+  const data = {
+    id: id,
+  };
+
+  try {
+    const response = await getAdminById(data);
+    if (response.length === 0) {
+      return res
+        .status(401)
+        .json({ message: "We could not find your email address" });
+    }
+    const user = response[0];
+    jwt.verify(token, config.jwtSecretKey, (err, decoded) => {
+      if (err) {
+        console.log(err);
+        return res.sendStatus(401);
+      }
+    });
+    res.render("../views/index", { email: user.email });
+  } catch (error) {
+    console.error("Error occurred:", error);
+    res.status(500).json({ error: true, message: "Internal Server Error" });
+  }
+};
+
+const postForm = async (req, res) => {
+  const { id, token } = req.query;
+  const { password, confirmPassword } = req.body;
+  if (!password) {
+    return res.json("Password cannot be empty");
+  } else if (password !== confirmPassword) {
+    return res.json("Passwords do not match");
+  }
+  try {
+    const value = {
+      id: id,
+    };
+    const response = await getAdminById(value);
+    if (response.length === 0) {
+      return res
+        .status(401)
+        .json({ message: "We could not find your email address" });
+    }
+    const user = response[0];
+    jwt.verify(token, config.jwtSecretKey, (err, decoded) => {
+      if (err) {
+        console.log(err);
+        return res.sendStatus(401);
+      }
+    });
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const data = {
+      password: hashedPassword,
+      id: id,
+    };
+    const changePassresponse = await changeAdminPassword(data);
+    if (!changePassresponse) {
+      return res.render("../views/error");
+    }
+    return res.render("../views/success");
+  } catch (error) {
+    console.error("Error occurred:", error);
+    return res.render("../views/error");
+  }
+};
+
+module.exports = {
+  handleAdminSignin,
+  handleAdminSignup,
+  handleForgotPassword,
+  clickEmail,
+  postForm,
+};

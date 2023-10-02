@@ -29,11 +29,43 @@ const loginAdmin = (data) => {
         if (err) {
           console.log(err);
           reject(err);
-        };
+        }
         resolve(result);
       }
     );
   });
 };
 
-module.exports = { addNewAdmin, loginAdmin };
+const getAdminById = (data) => {
+  return new Promise((resolve, reject) => {
+    connAttrs.query(
+      "SELECT * FROM admins WHERE id = ?",
+      [data.id],
+      (err, result, fields) => {
+        if (err) {
+          console.log(err);
+          reject(err);
+        }
+        resolve(result);
+      }
+    );
+  });
+};
+
+const changeAdminPassword = (data) => {
+  return new Promise((resolve, reject) => {
+    connAttrs.query(
+      "UPDATE admins SET password = ? WHERE id = ?",
+      [data.password, data.id],
+      (err, result, fields) => {
+        if (err) {
+          console.log(err);
+          reject(err);
+        }
+        resolve(result);
+      }
+    );
+  });
+};
+
+module.exports = { addNewAdmin, loginAdmin, getAdminById, changeAdminPassword };

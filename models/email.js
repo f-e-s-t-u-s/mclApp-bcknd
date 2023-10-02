@@ -1,5 +1,6 @@
 const nodemailer = require("nodemailer");
 const dotenv = require("dotenv");
+dotenv.config();
 
 const email_user = process.env.EML_USR;
 const email_pass = process.env.EML_PAS;
@@ -8,9 +9,10 @@ const email_port = process.env.EML_PORT;
 
 // Create a Nodemailer transporter
 const transporter = nodemailer.createTransport({
-  host: email_host,
-  port: email_port,
-  secure: false, // true for 465, false for other ports
+  // host: email_host,
+  service: "gmail",
+  // port: email_port,
+  // secure: false, // true for 465, false for other ports
   auth: {
     user: email_user,
     pass: email_pass,
@@ -25,7 +27,7 @@ module.exports = {
     try {
       // Send email with HTML content containing the text with line breaks
       let info = await transporter.sendMail({
-        from: email_user, // Replace with the sender's email address
+        from: `MCLINIC ${email_user}`, // Replace with the sender's email address
         to: emailAddress, // Replace with the recipient's email address
         subject: subject,
         html: `<div style="border-color: #337ab7; border-radius:6px; border: 0px solid #337ab7;">

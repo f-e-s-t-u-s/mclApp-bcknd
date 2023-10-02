@@ -105,6 +105,43 @@ const ratingRules = () => {
   ];
 };
 
+// rules to validate admin signup
+const adminSignupRules = () => {
+  return [
+    body("name")
+      .notEmpty()
+      .withMessage("Name is required")
+      .matches(/^[a-zA-Z\s\-']+$/)
+      .withMessage("Invalid name format"),
+    body("username")
+      .notEmpty()
+      .withMessage("Username is required")
+      .matches(/^[a-zA-Z\s\-']+$/)
+      .withMessage("Invalid name format"),
+
+    body("password")
+      .notEmpty()
+      .withMessage("Password is required")
+      .isLength({ min: 8 })
+      .withMessage("Password must be at least 8 characters long")
+      .matches(/[a-z]/)
+      .withMessage("Password must include at least one lowercase letter")
+      .matches(/[A-Z]/)
+      .withMessage("Password must include at least one uppercase letter")
+      .matches(/\d/)
+      .withMessage("Password must include at least one digit")
+      .matches(/[@$!%*?&]/)
+      .withMessage(
+        "Password must include at least one special character (@, $, !, %, *, ?, or &)"
+      ),
+    body("email")
+      .notEmpty()
+      .withMessage("Email is required")
+      .isEmail()
+      .withMessage("Invalid email address"),
+  ];
+};
+
 // function to perform validtaion
 const validate = (req, res, next) => {
   const errors = validationResult(req);
@@ -129,4 +166,5 @@ module.exports = {
   userSignupRules,
   registerUserRules,
   verifyCodeRules,
+  adminSignupRules,
 };

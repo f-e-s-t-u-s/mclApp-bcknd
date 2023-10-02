@@ -26,7 +26,9 @@ const {
   userSignupRules,
   registerUserRules,
   verifyCodeRules,
+  adminSignupRules,
 } = require("../middlewares/validationMiddleware");
+const { handleAdminSignin, handleAdminSignup } = require("../controllers/adminController");
 
 /**  Routes start here */
 router.post("/signin", signinRules(), validate, authController.signin);
@@ -200,7 +202,10 @@ router.post("/ambulance/rate", ratingRules(), validate, ambulanceReview);
 
 
 // ! admin routes
-
+// create new admin
+router.post("/admin/create-admin", adminSignupRules(), validate, handleAdminSignup)
+// login in admin
+router.post("/admin/login", handleAdminSignin)
 // ...add other endpoints here...
 
 module.exports = router;

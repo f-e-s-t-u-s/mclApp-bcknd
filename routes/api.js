@@ -195,6 +195,12 @@ router.get("/getAmbulanceQuery", getAmbulancesQuery);
 router.put("/assignAmbulance", assignRequestToAmbulance);
 
 router.post("/ambulance/rate", ratingRules(), validate, ambulanceReview);
+
+
+
+
+// ! admin routes
+
 // ...add other endpoints here...
 
 module.exports = router;

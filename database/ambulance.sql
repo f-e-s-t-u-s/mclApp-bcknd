@@ -12,6 +12,10 @@ CREATE TABLE ambulances (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME,
     in_contract BOOLEAN DEFAULT TRUE,
+    lease_expiry_date DATETIME,
+    driver_contact varchar(50),
+    ambulance_location VARCHAR(50),
+    comments TEXT,
     current_request_id BIGINT -- FOREIGN KEY (current_request_id) REFERENCES ambulance_requests(request_id)
 );
 CREATE TABLE ambulance_requests (

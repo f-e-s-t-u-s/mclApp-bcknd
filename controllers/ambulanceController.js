@@ -12,12 +12,25 @@ const ambulance = require("../models/ambulance");
 module.exports = {
   // admin adds ambulnce
   addNewAmbulance: async (req, res) => {
-    const { ambulance_plate, issuing_organization } = req.body;
+    const {
+      plate,
+      issuer,
+      comments,
+      driver,
+      expiry,
+      location,
+    } = req.body;
+    console.log(req.body);
     try {
-      const response = await ambulance.addAmbulannce({
-        ambulance_plate,
-        issuing_organization,
-      });
+      const data = {
+        plate: plate,
+        issuer: issuer,
+        comments: comments,
+        driver: driver,
+        expiry: expiry,
+        location: location,
+      };
+      const response = await ambulance.addAmbulannce(data);
       console.log(response);
       return res.status(200).json({ message: "Ambulance added successfully" });
     } catch (error) {
@@ -30,7 +43,9 @@ module.exports = {
       const { ambulance_id } = req.body;
       const response = await ambulance.deleteAmbulance(ambulance_id);
       console.log(response);
-      return res.status(200).json({message: "Ambulance deleted successfully"})
+      return res
+        .status(200)
+        .json({ message: "Ambulance deleted successfully" });
     } catch (error) {
       console.log(error);
       res.status(500).json({ error: true, message: "Internal Server Error" });
@@ -59,10 +74,11 @@ module.exports = {
     try {
       const response = await ambulance.addAmbulanceRequestDetails(data);
       console.log(response);
+      // return past requests made by the user
       const getAppointments = await ambulance.getUserAmbulanceRequests(user_id);
       return res
         .status(201)
-        .json(getAppointments, { message: "Request submitted successfully" });
+        .json({ getAppointments, message: "Request submitted successfully" });
     } catch (error) {
       console.log(error);
       res.status(500).json({ error: true, message: "Internal Server Error" });

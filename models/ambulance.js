@@ -5,11 +5,18 @@ const mysql = require("mysql");
 const connAttrs = mysql.createConnection(config.connection);
 
 module.exports = {
-  addAmbulannce: async ({ ambulance_plate, issuing_organization }) => {
+  addAmbulannce: async (data) => {
     return new Promise((resolve, reject) => {
       connAttrs.query(
-        "INSERT INTO ambulances (ambulance_plate, issuing_organization) VALUES (?,?)",
-        [ambulance_plate, issuing_organization],
+        "INSERT INTO ambulances (ambulance_plate, issuing_organization, lease_expiry_date, driver_contact, ambulance_location, comments ) VALUES (?,?,?,?,?,?)",
+        [
+          data.plate,
+          data.issuer,
+          data.expiry,
+          data.driver,
+          data.location,
+          data.comments,
+        ],
         (err, results, fields) => {
           if (err) {
             console.log(err);
@@ -65,8 +72,8 @@ module.exports = {
       connAttrs.query(
         "SELECT request_id, pickup_location, destination_address, distance, pickup_date, patient_state, request_datetime, request_status FROM ambulance_requests WHERE patient_id = ?",
         [user_id],
-        (err, results, fields) =>{
-          if(err){
+        (err, results, fields) => {
+          if (err) {
             console.log(err);
             reject(err);
           }

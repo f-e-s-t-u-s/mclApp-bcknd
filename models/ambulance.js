@@ -127,7 +127,7 @@ module.exports = {
 
         // Update the ambulance_requests table
         connAttrs.query(
-          `UPDATE ambulance_requests SET status = ?, ambulance_id = ? WHERE request_id = ?`,
+          `UPDATE ambulance_requests SET request_status = ?, ambulance_id = ? WHERE request_id = ?`,
           [status, ambulance_id, request_id],
           (err, results, fields) => {
             if (err) {

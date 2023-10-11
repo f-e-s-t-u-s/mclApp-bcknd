@@ -68,4 +68,20 @@ const changeAdminPassword = (data) => {
   });
 };
 
-module.exports = { addNewAdmin, loginAdmin, getAdminById, changeAdminPassword };
+const getAdmins = () => {
+  return new Promise((resolve, reject) => {
+    connAttrs.query(
+      "SELECT id, name, email, username, created_at FROM admins",
+      [],
+      (err, result) => {
+        if (err) {
+          console.log(err);
+          reject(err);
+        }
+        resolve(result);
+      }
+    );
+  });
+};
+
+module.exports = { addNewAdmin, loginAdmin, getAdminById, changeAdminPassword, getAdmins };

@@ -28,7 +28,7 @@ const {
   verifyCodeRules,
   adminSignupRules,
 } = require("../middlewares/validationMiddleware");
-const { handleAdminSignin, handleAdminSignup, handleForgotPassword, clickEmail, postForm } = require("../controllers/adminController");
+const { handleAdminSignin, handleAdminSignup, handleForgotPassword, clickEmail, postForm, getAllAdmins } = require("../controllers/adminController");
 
 /**  Routes start here */
 router.post("/signin", signinRules(), validate, authController.signin);
@@ -213,7 +213,10 @@ router.post("/admin/forgot-pass", handleForgotPassword);
 router.get("/admin/reset", clickEmail);
 
 // submit chnage password form
-router.post("/admin/reset", postForm)
+router.post("/admin/reset", postForm);
+
+// get all admins
+router.get("/admin/get-all-admins", getAllAdmins);
 // ...add other endpoints here...
 
 module.exports = router;

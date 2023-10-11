@@ -6,6 +6,7 @@ const {
   loginAdmin,
   getAdminById,
   changeAdminPassword,
+  getAdmins,
 } = require("../models/admin");
 const { sendEmail } = require("../models/email");
 
@@ -53,8 +54,13 @@ const handleAdminSignin = async (req, res) => {
     email: response[0].email,
     user_id: response[0].id,
   };
+  const userData = {
+    name: response[0].name,
+    email: response[0].email,
+    user_id: response[0].id,
+  };
   const token = jwt.sign(tokenData, config.jwtSecretKey, { expiresIn: "1d" });
-  return res.status(200).json({ message: "Login Successful", token });
+  return res.status(200).json({ message: "Login Successful", token, userData });
 };
 
 // forgot password
@@ -167,10 +173,23 @@ const postForm = async (req, res) => {
   }
 };
 
+// get all admins
+const getAllAdmins = async (req, res) => {
+  try {
+    const response = await getAdmins();
+    // console.log(response);
+    return res.status(200).json(response);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "an error occurred" });
+  }
+};
+
 module.exports = {
   handleAdminSignin,
   handleAdminSignup,
   handleForgotPassword,
   clickEmail,
   postForm,
+  getAllAdmins,
 };

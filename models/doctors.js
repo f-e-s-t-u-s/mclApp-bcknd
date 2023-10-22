@@ -34,6 +34,28 @@ module.exports = {
       });
     });
   },
+  findDoctorQuery: async (data) => {
+    return new Promise((resolve, reject) => {
+      pool.getConnection((err, connection) => {
+        if (err) {
+          return reject(err);
+        }
+
+        connection.query(
+          "SELECT * FROM doctors WHERE Verified_status = ? ORDER BY ID ASC",
+          [data],
+          (error, result) => {
+            connection.release();
+
+            if (error) {
+              return reject(error);
+            }
+            resolve(result);
+          }
+        );
+      });
+    });
+  },
   findNurses: async () => {
     return new Promise((resolve, reject) => {
       pool.getConnection((err, connection) => {
@@ -84,7 +106,7 @@ module.exports = {
         }
 
         connection.query(
-          "SELECT * FROM doctors WHERE id = ?", 
+          "SELECT * FROM doctors WHERE id = ?",
           id,
           (error, result) => {
             connection.release();
@@ -99,15 +121,15 @@ module.exports = {
     });
   },
 
- findBalance: async (id) => {
+  findBalance: async (id) => {
     return new Promise((resolve, reject) => {
       pool.getConnection((err, connection) => {
         if (err) {
           return reject(err);
-        } 
+        }
 
         connection.query(
-          "SELECT balance FROM doctors WHERE id = ?", 
+          "SELECT balance FROM doctors WHERE id = ?",
           id,
           (error, result) => {
             connection.release();
@@ -173,18 +195,14 @@ module.exports = {
           return reject(err);
         }
 
-        connection.query(
-          "INSERT INTO doctors SET ?",
-          user,
-          (error, result) => {
-            connection.release();
+        connection.query("INSERT INTO doctors SET ?", user, (error, result) => {
+          connection.release();
 
-            if (error) {
-              return reject(error);
-            }
-            resolve(result);
+          if (error) {
+            return reject(error);
           }
-        );
+          resolve(result);
+        });
       });
     });
   },
@@ -210,7 +228,7 @@ module.exports = {
       });
     });
   },
-verifyDoctor: async (user) => {
+  verifyDoctor: async (user) => {
     return new Promise((resolve, reject) => {
       pool.getConnection((err, connection) => {
         if (err) {
@@ -231,7 +249,7 @@ verifyDoctor: async (user) => {
     });
   },
 
- addDoctorQualification: async (user) => {
+  addDoctorQualification: async (user) => {
     return new Promise((resolve, reject) => {
       pool.getConnection((err, connection) => {
         if (err) {
@@ -275,7 +293,7 @@ verifyDoctor: async (user) => {
     });
   },
 
- addDoctorExperience: async (user) => {
+  addDoctorExperience: async (user) => {
     return new Promise((resolve, reject) => {
       pool.getConnection((err, connection) => {
         if (err) {
@@ -297,7 +315,7 @@ verifyDoctor: async (user) => {
     });
   },
 
- updateDoctorBasic: async (user) => {
+  updateDoctorBasic: async (user) => {
     return new Promise((resolve, reject) => {
       pool.getConnection((err, connection) => {
         if (err) {
@@ -310,14 +328,14 @@ verifyDoctor: async (user) => {
           user.dob,
           user.gender,
           user.speciality_id,
-	  user.dr_type,
-          user.name,  
-          user.password,  
+          user.dr_type,
+          user.name,
+          user.password,
           user.mobile,
           user.address,
-          user.location_id,                 
+          user.location_id,
           user.updated_at,
-          user.email
+          user.email,
         ];
         connection.query(query, values, (error, result) => {
           connection.release();
@@ -332,36 +350,36 @@ verifyDoctor: async (user) => {
   },
 
   updateDoctorAvailability: async (user) => {
-  return new Promise((resolve, reject) => {
-    pool.getConnection((err, connection) => {
-      if (err) {
-        return reject(err);
-      }
-
-      const query = `UPDATE doctors SET latitude =?, longitude =?, status =?,
-                      updated_at=? WHERE id=?`; // Fixed the SQL query
-      const values = [
-        user.lat,
-        user.lng,
-        user.status,
-        user.updated_at,
-        user.userId,
-      ];
-
-      connection.query(query, values, (error, result) => {
-        connection.release();
-
-        if (error) {
-          return reject(error);
+    return new Promise((resolve, reject) => {
+      pool.getConnection((err, connection) => {
+        if (err) {
+          return reject(err);
         }
 
-        resolve(result);
+        const query = `UPDATE doctors SET latitude =?, longitude =?, status =?,
+                      updated_at=? WHERE id=?`; // Fixed the SQL query
+        const values = [
+          user.lat,
+          user.lng,
+          user.status,
+          user.updated_at,
+          user.userId,
+        ];
+
+        connection.query(query, values, (error, result) => {
+          connection.release();
+
+          if (error) {
+            return reject(error);
+          }
+
+          resolve(result);
+        });
       });
     });
-  });
-},
+  },
 
-updateUserRegCode: async (user) => {
+  updateUserRegCode: async (user) => {
     return new Promise((resolve, reject) => {
       pool.getConnection((err, connection) => {
         if (err) {
@@ -370,11 +388,7 @@ updateUserRegCode: async (user) => {
 
         const query =
           "UPDATE doctors SET reg_code =?, updated_at=?  WHERE email = ?";
-        const values = [
-         user.reg_code,
-         user.updated_at,
-         user.email,	  
-        ];
+        const values = [user.reg_code, user.updated_at, user.email];
 
         connection.query(query, values, (error, result) => {
           connection.release();
@@ -401,7 +415,7 @@ updateUserRegCode: async (user) => {
           user.password,
           user.updated_at,
           user.email,
-	  user.reg_code,
+          user.reg_code,
         ];
 
         connection.query(query, values, (error, result) => {
@@ -415,6 +429,26 @@ updateUserRegCode: async (user) => {
       });
     });
   },
-
-
+  // approve or deny doctor application
+  updateDoctorVerifiedStatus: (doctor_id, verified) => {
+    return new Promise((resolve, reject) => {
+      pool.getConnection((err, connection) => {
+        if (err) {
+          return reject(err);
+        }
+        
+        connection.query(
+          "UPDATE doctors SET Verified_status = ? WHERE id = ?",
+          [verified, doctor_id],
+          (err, result) => {
+            connection.release();
+            if (err) {
+              return reject(err);
+            }
+            resolve(result);
+          }
+        );
+      });
+    });
+  },
 };

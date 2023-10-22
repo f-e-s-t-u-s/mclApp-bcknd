@@ -60,7 +60,7 @@ router.post(
   authMiddleware.verifyToken,
   doctorController.getAllDoctor
 );
-
+router.post("/doctor/query",doctorController.getDoctorQuery)
 /**get Nurses  */
 
 router.get("/nurses", doctorController.getNurses);
@@ -188,7 +188,7 @@ router.post(
 );
 
 // admin gets all pending ambulance requests
-router.get("/pendingRequests", getPendingAmbulanceRequest);
+router.post("/pendingRequests", getPendingAmbulanceRequest);
 
 // get free or inuse ambulnase
 router.get("/getAmbulanceQuery", getAmbulancesQuery);
@@ -217,6 +217,10 @@ router.post("/admin/reset", postForm);
 
 // get all admins
 router.get("/admin/get-all-admins", getAllAdmins);
+
+
+// approve doctor application
+router.post("/admin/doctor-approval",doctorController.approveDoctorRequest)
 // ...add other endpoints here...
 
 module.exports = router;

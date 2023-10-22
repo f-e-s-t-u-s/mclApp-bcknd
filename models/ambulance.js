@@ -82,9 +82,9 @@ module.exports = {
       );
     });
   },
-  getPendingRequest: async () => {
+  getPendingRequest: async (status) => {
     return new Promise((resolve, reject) => {
-      const request_status = "Pending";
+      const request_status = status;
       connAttrs.query(
         "SELECT * FROM ambulance_requests WHERE request_status = ?",
         [request_status],

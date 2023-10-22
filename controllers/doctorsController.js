@@ -4,11 +4,24 @@ const bcrypt = require("bcryptjs");
 const config = require("../config/config");
 const jwt = require("jsonwebtoken");
 
-
 module.exports = {
   getAllDoctor: async (req, res) => {
     try {
       const result = await Doctor.findDoctors();
+      console.log(`${req.email}, successfully pulled doctors on ${new Date()}`);
+      return res.status(202).json(result);
+    } catch (error) {
+      console.error("Error occurred:", error);
+      res.status(500).json({ error: true, message: "Internal Server Error" });
+    }
+  },
+  getDoctorQuery: async (req, res) => {
+    const verified_status = req.body.verified;
+    const values = {
+      verified: parseInt(verified_status),
+    };
+    try {
+      const result = await Doctor.findDoctorQuery(values.verified);
       console.log(`${req.email}, successfully pulled doctors on ${new Date()}`);
       return res.status(202).json(result);
     } catch (error) {
@@ -43,7 +56,7 @@ module.exports = {
 
   getDoctorsBalance: async (req, res) => {
     try {
-      const result = await Doctor.findBalance(req.userId); 
+      const result = await Doctor.findBalance(req.userId);
       console.log(
         `${req.email}, successfully pulled Doctors Balance on ${new Date()}`
       );
@@ -53,7 +66,6 @@ module.exports = {
       res.status(500).json({ error: true, message: "Internal Server Error" });
     }
   },
-
 
   doctorById: async (req, res) => {
     const id = req.params.id;
@@ -197,7 +209,7 @@ module.exports = {
     }
   },
 
-    updateDoctorQualification: async (req, res) => {
+  updateDoctorQualification: async (req, res) => {
     // fname, lname, email, org_id, password
     const {
       academic_org_issue,
@@ -218,12 +230,12 @@ module.exports = {
       }
       const educationData = {
         institution: academic_org_issue,
-        period: academic_year_award,        
+        period: academic_year_award,
         level,
         doctor_id: doctor.id,
       };
       const academicResult = await Doctor.addDoctorQualification(educationData);
-      const lincensData = {        
+      const lincensData = {
         doctor_id: doctor.id,
         lincesing_org,
         linces_no,
@@ -231,18 +243,16 @@ module.exports = {
       };
       const lincesResult = await Doctor.addDoctorLinsence(lincensData);
       console.log(
-        `${
-          email
-        }, successfully updated Doctor's Qualification on ${new Date()}`
+        `${email}, successfully updated Doctor's Qualification on ${new Date()}`
       );
-      return res.status(201).json({lincesResult, academicResult });
+      return res.status(201).json({ lincesResult, academicResult });
     } catch (error) {
       console.error("Error occurred:", error);
       res.status(500).json({ error: true, message: "Internal Server Error" });
     }
   },
 
-updateDoctorExperience: async (req, res) => {
+  updateDoctorExperience: async (req, res) => {
     const {
       proffesional_org_name,
       period_from,
@@ -269,17 +279,17 @@ updateDoctorExperience: async (req, res) => {
         accept_terms,
         doctor_id: doctor.id,
       };
-      const experienceResult = await Doctor.addDoctorExperience(experienceData)
+      const experienceResult = await Doctor.addDoctorExperience(experienceData);
       console.log(
         `${email}, successfully updated Doctor's Work Experience on ${new Date()}`
       );
 
- const payload = {
+      const payload = {
         email: doctor.email,
         entity_id: doctor.id,
       };
 
-      const token = jwt.sign(payload, config.jwtSecretKey, { 
+      const token = jwt.sign(payload, config.jwtSecretKey, {
         expiresIn: "1d",
       });
 
@@ -290,22 +300,22 @@ updateDoctorExperience: async (req, res) => {
           mobile: doctor.mobile,
           address: doctor.address,
           latitude: doctor.latitude,
-	  longitude: doctor.longitude,
+          longitude: doctor.longitude,
           status: doctor.status,
         },
         token,
       });
 
-     // return res.status(200).json({experienceResult});
+      // return res.status(200).json({experienceResult});
     } catch (error) {
       console.error("Error occurred:", error);
       res.status(500).json({ error: true, message: "Internal Server Error" });
     }
   },
 
- updateDoctorAvailability: async (req, res) => {
-    const { lat, lng, status} = req.body;
-	const userId = req.userId
+  updateDoctorAvailability: async (req, res) => {
+    const { lat, lng, status } = req.body;
+    const userId = req.userId;
     try {
       const user = await Doctor.findDoctorById(userId);
       if (!user) {
@@ -318,7 +328,7 @@ updateDoctorExperience: async (req, res) => {
         lat,
         lng,
         status,
-	userId: user.id,
+        userId: user.id,
         updated_at: new Date(),
       };
 
@@ -329,6 +339,22 @@ updateDoctorExperience: async (req, res) => {
         }, successfully updated Doctor's availability on ${new Date()}`
       );
       return res.status(201).json(result);
+    } catch (error) {
+      console.error("Error occurred:", error);
+      res.status(500).json({ error: true, message: "Internal Server Error" });
+    }
+  },
+    // approve or deny doctor application
+
+  approveDoctorRequest: async (req, res) => {
+    const { doctor_id, verified_status} = req.body;
+    console.log(req.body);
+    const verified = parseInt(verified_status)
+
+    try {
+      const response = await Doctor.updateDoctorVerifiedStatus(doctor_id, verified);
+      console.log(response);
+      return res.status(200).json({message: "Doctor Application approved successfuly"})
     } catch (error) {
       console.error("Error occurred:", error);
       res.status(500).json({ error: true, message: "Internal Server Error" });

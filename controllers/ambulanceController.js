@@ -85,8 +85,10 @@ module.exports = {
     }
   },
   getPendingAmbulanceRequest: async (req, res) => {
+    console.log(req.body);
+    const status = req.body.request_status;
     try {
-      const response = await ambulance.getPendingRequest();
+      const response = await ambulance.getPendingRequest(status);
       //   console.log(response);
       return res.status(200).json(response);
     } catch (error) {

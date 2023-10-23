@@ -14,13 +14,27 @@ const {
   getPendingAmbulanceRequest,
   assignRequestToAmbulance,
   getAmbulancesQuery,
+  ambulanceReview,
+  addNewAmbulance,
+  deleteAmbulance,
 } = require("../controllers/ambulanceController");
+const {
+  requestAmbulanceRules,
+  ratingRules,
+  validate,
+  signinRules,
+  userSignupRules,
+  registerUserRules,
+  verifyCodeRules,
+  adminSignupRules,
+} = require("../middlewares/validationMiddleware");
+const { handleAdminSignin, handleAdminSignup, handleForgotPassword, clickEmail, postForm, getAllAdmins } = require("../controllers/adminController");
 
-router.post("/signin", authController.signin);
-router.post("/register", userController.register);
-router.post("/signup", userController.onbording);
-router.post("/verify", userController.verify);
-
+/**  Routes start here */
+router.post("/signin", signinRules(), validate, authController.signin);
+router.post("/register", registerUserRules(), validate, userController.register);
+router.post("/signup", userSignupRules(), validate, userController.onbording);
+router.post("/verify", verifyCodeRules(), validate, userController.verify);
 router.post("/doctorSignin", doctorAuthController.signin);
 router.post("/doctorSinup", doctorAuthController.onbording);
 router.post("/doctorVerify", doctorAuthController.verify);
@@ -46,7 +60,7 @@ router.post(
   authMiddleware.verifyToken,
   doctorController.getAllDoctor
 );
-
+router.post("/doctor/query",doctorController.getDoctorQuery)
 /**get Nurses  */
 
 router.get("/nurses", doctorController.getNurses);
@@ -160,17 +174,53 @@ router.post(
 );
 
 // ! ambulance routes
+// admin adds an ambulnace
+router.post("/add-ambulance", addNewAmbulance);
+
+// admin deletes an ambulance
+router.post("/delete-ambulance", deleteAmbulance);
+
 // user makes request for an ambulance
-router.post("/getAmbulance", requestAmbulance);
+router.post(
+  "/getAmbulance",
+  authMiddleware.verifyToken,
+  requestAmbulance
+);
 
 // admin gets all pending ambulance requests
-router.get("/pendingRequests", getPendingAmbulanceRequest);
+router.post("/pendingRequests", getPendingAmbulanceRequest);
 
 // get free or inuse ambulnase
-router.get("/getAmbulanceQuery", getAmbulancesQuery)
+router.get("/getAmbulanceQuery", getAmbulancesQuery);
 
 // admin assign request to an ambulance
 router.put("/assignAmbulance", assignRequestToAmbulance);
+
+router.post("/ambulance/rate", ratingRules(), validate, ambulanceReview);
+
+
+
+
+// ! admin routes
+// create new admin
+router.post("/admin/create-admin", adminSignupRules(), validate, handleAdminSignup)
+// login in admin
+router.post("/admin/login", handleAdminSignin);
+// admin forgort password
+router.post("/admin/forgot-pass", handleForgotPassword);
+
+// get change password form
+router.get("/admin/reset", clickEmail);
+
+// submit chnage password form
+router.post("/admin/reset", postForm);
+
+// get all admins
+router.get("/admin/get-all-admins", getAllAdmins);
+
+
+// approve doctor application
+router.post("/admin/doctor-approval",doctorController.approveDoctorRequest)
 // ...add other endpoints here...
 
 module.exports = router;
